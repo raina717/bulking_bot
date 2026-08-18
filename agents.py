@@ -24,17 +24,18 @@ _claude_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY) if ANTHROPIC_API_KEY 
 _gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
 
-async def _ask_claude(system_prompt: str, user_message: str) -> str:
-    if _claude_client is None:
-        raise RuntimeError("ANTHROPIC_API_KEY is not set")
-    resp = await _claude_client.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=1024,
-        system=system_prompt,
-        messages=[{"role": "user", "content": user_message}],
-        timeout=30.0,
+async def _ask_gemini(system_prompt: str, user_message: str) -> str:
+    if _gemini_client is None:
+        raise RuntimeError("GEMINI_API_KEY is not set")
+    resp = await _gemini_client.aio.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=[user_message],
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            temperature=0.7,
+        )
     )
-    return resp.content[0].text
+    return resp.text
 
 
 async def _ask_hermes(system_prompt: str, user_message: str) -> str:
@@ -106,12 +107,10 @@ async def estimate_food_from_image(image_bytes: bytes, media_type: str, caption:
 
 async def ask_agent(system_prompt: str, user_message: str) -> tuple[str, str]:
     try:
-        answer = await _ask_claude(system_prompt, user_message)
-        return answer, "claude"
-    except (APIError, APIConnectionError, APITimeoutError, RateLimitError, RuntimeError) as e:
-        logger.warning("Claude failed (%s), falling back to Hermes...", e)
+        answer = await _ask_gemini(system_prompt, user_message)
+        return answer, "gemini"
     except Exception as e:
-        logger.warning("Unexpected Claude error (%s), falling back to Hermes...", e)
+        logger.warning("Gemini failed (%s), falling back to Hermes...", e)
 
     try:
         answer = await _ask_hermes(system_prompt, user_message)
@@ -119,7 +118,7 @@ async def ask_agent(system_prompt: str, user_message: str) -> tuple[str, str]:
     except Exception as e:
         logger.error("Hermes also failed: %s", e)
         return (
-            "Both Claude and Hermes are unreachable. "
-            "Please check your API key or Ollama service connection.",
+            "Maaf, API Gemini sedang bermasalah atau key-nya belum disetup. "
+            "Coba cek GEMINI_API_KEY di file .env ya.",
             "none",
         )
