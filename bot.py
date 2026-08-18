@@ -179,7 +179,7 @@ async def profile_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-# ---------- /kalori ----------
+# ---------- /calories ----------
 
 @owner_only
 async def calories(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -191,7 +191,7 @@ async def calories(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(format_plan_message(profile, plan), parse_mode="Markdown")
 
 
-# ---------- /saran ----------
+# ---------- /suggest ----------
 
 @owner_only
 async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):

@@ -49,7 +49,7 @@ def _build_suggestion(
     if days_logged < 4:
         return (
             "Data minggu ini masih kurang (idealnya timbang & catat makan tiap hari "
-            "pakai /berat dan /makan). Lanjutin logging-nya biar rekomendasi ini akurat."
+            "pakai /weight dan /eat). Lanjutin logging-nya biar rekomendasi ini akurat."
         )
     if actual_rate is None:
         return "Belum bisa dibandingin ke minggu lalu (butuh data berat badan minimal 2 minggu)."
