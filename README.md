@@ -6,7 +6,7 @@ A personalized Telegram bot designed to assist you during your bulking journey b
 
 - **Profile Tracking:** Set your body metrics and weight gain target (`/profile`).
 - **Daily Targets:** View your calculated BMR, TDEE, and daily calorie/protein goals (`/calories`).
-- **Progress Logging:** Manually log your body weight (`/weight`), calories burned from workouts (`/exercise`), and meals eaten (`/eat`).
+- **Progress Logging:** Log your body weight (`/weight`), calories burned from workouts (`/exercise`), and meals eaten (`/eat`) — either with exact numbers, a free-text description, or a photo of your meal (AI estimates the calories/protein for you).
 - **Budget Tracking:** Check your remaining calorie and protein budget for the day (`/remaining`).
 - **Smart Suggestions:** Get high-protein meal ideas that perfectly fit your remaining daily budget (`/suggest`).
 - **Weekly Review:** Compare weekly progress and get advice on adjusting your caloric surplus (`/week`).
@@ -32,7 +32,7 @@ The easiest and recommended way to deploy the bot is using **Docker Compose**.
    cp .env.example .env
    nano .env
    ```
-   Fill in your `TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`, and `ANTHROPIC_API_KEY`.
+   Fill in your `TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`, `ANTHROPIC_API_KEY`, and `GEMINI_API_KEY`.
 4. **Start the bot:**
    ```bash
    docker compose up -d
@@ -49,7 +49,12 @@ The easiest and recommended way to deploy the bot is using **Docker Compose**.
 1. Send `/start` to view the main menu.
 2. Send `/profile` to initialize your body metrics and goals.
 3. Check your daily targets using `/calories`.
-4. After every meal or workout, log your progress using `/eat` and `/exercise`.
+4. After every meal or workout, log your progress using `/eat` and `/exercise`. For `/eat` you can either:
+   - type exact numbers: `/eat 450 35` (kcal, protein_g)
+   - describe the meal: `/eat 1 plate fried rice with chicken` (AI estimates it)
+   - or just send a photo of your meal (AI estimates it from the photo)
+
+   Note: AI-based food estimates (text/photo) use Google Gemini and require a working `GEMINI_API_KEY`.
 5. Check `/remaining` at the end of the day to see if you have room for a snack, and use `/suggest` if you need ideas.
 6. Check `/week` at the end of the week for progress analysis.
 

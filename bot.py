@@ -14,7 +14,7 @@ from telegram.ext import (
 
 from profile_store import Profile, load_profile, save_profile, VALID_ACTIVITY_LEVELS
 from calorie import calculate_bulking_plan, format_plan_message
-from agents import ask_agent
+from agents import ask_agent, estimate_food_from_text, estimate_food_from_image
 from log_store import get_log, log_weight, log_exercise, log_food, today_str
 from tracking import build_weekly_review, format_weekly_message
 
@@ -62,6 +62,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/weight <kg> - log today's body weight\n"
         "/exercise <kcal> [note] - log calories burned from Huawei Health\n"
         "/eat <kcal> [protein_g] - log calories (& protein) you have eaten\n"
+        "/eat <description> - or just describe your meal, AI will estimate it\n"
+        "or send a food photo - AI will estimate calories/protein from it\n"
         "/remaining - check remaining calorie & protein budget for today\n"
         "/week - weekly progress summary & adjustment suggestions\n\n"
         "Or just chat freely about nutrition/bulking, and I'll answer using AI."
@@ -253,23 +255,72 @@ async def exercise(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-@owner_only
-async def eat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not context.args:
-        await update.message.reply_text("Format: /eat <kcal> [protein_g], e.g.: /eat 450 35")
-        return
-    try:
-        kcal = _parse_float(context.args[0])
-        protein = _parse_float(context.args[1]) if len(context.args) > 1 else 0.0
-    except ValueError:
-        await update.message.reply_text("Invalid numbers, e.g.: /eat 450 35")
-        return
-    entry = log_food(kcal, protein)
-    await update.message.reply_text(
+def _format_food_logged(entry, kcal: float, protein: float, header: str) -> str:
+    return (
+        f"{header}\n"
         f"Logged: +{kcal:.0f} kcal / +{protein:.0f} g protein.\n"
         f"Total today: {entry.food_kcal:.0f} kcal, {entry.food_protein_g:.0f} g protein.\n"
         f"Check your remaining budget for today using /remaining."
     )
+
+
+@owner_only
+async def eat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.args:
+        await update.message.reply_text(
+            "Format:\n"
+            "/eat <kcal> [protein_g] - e.g.: /eat 450 35\n"
+            "/eat <food description> - e.g.: /eat 1 plate fried rice with chicken "
+            "(AI will estimate the kcal & protein for you)\n"
+            "Or just send a photo of your meal."
+        )
+        return
+
+    # Coba format manual dulu: /eat <kcal> [protein_g]
+    try:
+        kcal = _parse_float(context.args[0])
+        protein = _parse_float(context.args[1]) if len(context.args) > 1 else 0.0
+        entry = log_food(kcal, protein)
+        await update.message.reply_text(_format_food_logged(entry, kcal, protein, "Manually logged."))
+        return
+    except ValueError:
+        pass
+
+    # Bukan angka -> anggap deskripsi makanan, minta Claude estimasi.
+    description = " ".join(context.args)
+    await update.message.reply_text("Hold on, estimating calories & protein...")
+    estimate = await estimate_food_from_text(description)
+    if estimate is None:
+        await update.message.reply_text(
+            "Couldn't estimate that automatically (Gemini API might be down/misconfigured). "
+            "Please log manually instead, e.g.: /eat 450 35"
+        )
+        return
+    kcal, protein = float(estimate["kcal"]), float(estimate["protein_g"])
+    entry = log_food(kcal, protein)
+    header = f"🍽️ {estimate['food_name']} (estimated, confidence: {estimate['confidence']})"
+    await update.message.reply_text(_format_food_logged(entry, kcal, protein, header))
+
+
+@owner_only
+async def food_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Hold on, analyzing the photo...")
+    photo = update.message.photo[-1]
+    tg_file = await context.bot.get_file(photo.file_id)
+    image_bytes = bytes(await tg_file.download_as_bytearray())
+    caption = update.message.caption or ""
+
+    estimate = await estimate_food_from_image(image_bytes, "image/jpeg", caption)
+    if estimate is None:
+        await update.message.reply_text(
+            "Couldn't analyze that photo (Gemini API might be down/misconfigured). "
+            "Please log manually instead, e.g.: /eat 450 35"
+        )
+        return
+    kcal, protein = float(estimate["kcal"]), float(estimate["protein_g"])
+    entry = log_food(kcal, protein)
+    header = f"🍽️ {estimate['food_name']} (estimated from photo, confidence: {estimate['confidence']})"
+    await update.message.reply_text(_format_food_logged(entry, kcal, protein, header))
 
 
 @owner_only
@@ -359,6 +410,7 @@ def main():
     app.add_handler(CommandHandler("eat", eat))
     app.add_handler(CommandHandler("remaining", remaining))
     app.add_handler(CommandHandler("week", week))
+    app.add_handler(MessageHandler(filters.PHOTO, food_photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, free_chat))
 
     logger.info("Bot is running (polling)...")
