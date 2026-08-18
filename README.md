@@ -4,12 +4,12 @@ A personalized Telegram bot designed to assist you during your bulking journey b
 
 ## Features
 
-- **Profile Tracking:** Set your body metrics and weight gain target (`/profile`).
-- **Daily Targets:** View your calculated BMR, TDEE, and daily calorie/protein goals (`/calories`).
-- **Progress Logging:** Log your body weight (`/weight`), calories burned from workouts (`/exercise`), and meals eaten (`/eat`) — either with exact numbers, a free-text description, or a photo of your meal (AI estimates the calories/protein for you).
-- **Budget Tracking:** Check your remaining calorie and protein budget for the day (`/remaining`).
-- **Smart Suggestions:** Get high-protein meal ideas that perfectly fit your remaining daily budget (`/suggest`).
-- **Weekly Review:** Compare weekly progress and get advice on adjusting your caloric surplus (`/week`).
+- **Profile Tracking:** Set your body metrics and weight gain target (`/profil`).
+- **Daily Targets:** View your calculated BMR, TDEE, and daily calorie/protein goals (`/kalori`).
+- **Progress Logging:** Log your body weight (`/berat`), calories burned from workouts (`/olahraga`), and meals eaten (`/makan`) — either with exact numbers, a free-text description, or a photo of your meal (AI estimates the calories/protein for you).
+- **Budget Tracking:** Check your remaining calorie and protein budget for the day (`/sisa`).
+- **Smart Suggestions:** Get high-protein meal ideas that perfectly fit your remaining daily budget (`/saran`).
+- **Weekly Review:** Compare weekly progress and get advice on adjusting your caloric surplus (`/minggu`).
 - **Free Chat:** Ask any nutrition-related questions, and the AI will answer using your personal profile's context.
 
 ## Setup & Installation (Docker)
@@ -47,16 +47,16 @@ The easiest and recommended way to deploy the bot is using **Docker Compose**.
 ## How to Use
 
 1. Send `/start` to view the main menu.
-2. Send `/profile` to initialize your body metrics and goals.
-3. Check your daily targets using `/calories`.
-4. After every meal or workout, log your progress using `/eat` and `/exercise`. For `/eat` you can either:
-   - type exact numbers: `/eat 450 35` (kcal, protein_g)
-   - describe the meal: `/eat 1 plate fried rice with chicken` (AI estimates it)
+2. Send `/profil` to initialize your body metrics and goals.
+3. Check your daily targets using `/kalori`.
+4. After every meal or workout, log your progress using `/makan` and `/olahraga`. For `/makan` you can either:
+   - type exact numbers: `/makan 450 35` (kcal, protein_g)
+   - describe the meal: `/makan 1 plate fried rice with chicken` (AI estimates it)
    - or just send a photo of your meal (AI estimates it from the photo)
 
    Note: AI-based food estimates (text/photo) use Google Gemini and require a working `GEMINI_API_KEY`.
-5. Check `/remaining` at the end of the day to see if you have room for a snack, and use `/suggest` if you need ideas.
-6. Check `/week` at the end of the week for progress analysis.
+5. Check `/sisa` at the end of the day to see if you have room for a snack, and use `/saran` if you need ideas.
+6. Check `/minggu` at the end of the week for progress analysis.
 
 ## Troubleshooting
 

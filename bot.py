@@ -31,12 +31,12 @@ TELEGRAM_OWNER_ID = int(os.getenv("TELEGRAM_OWNER_ID", "0"))
 WEIGHT, HEIGHT, AGE, GENDER, ACTIVITY, TARGET_GAIN, TARGET_WEEKS = range(7)
 
 ACTIVITY_HELP = (
-    "Choose your activity level (type one of the following):\n"
-    "- sedentary: office job, rarely exercises\n"
-    "- light: light exercise 1-3x/week\n"
-    "- moderate: moderate exercise 3-5x/week\n"
-    "- active: heavy exercise 6-7x/week\n"
-    "- very_active: heavy exercise + physical job"
+    "Pilih tingkat aktivitas fisik kamu:\n"
+    "- sedentary: kerja kantoran, jarang olahraga\n"
+    "- light: olahraga ringan 1-3x/minggu\n"
+    "- moderate: olahraga sedang 3-5x/minggu\n"
+    "- active: olahraga berat 6-7x/minggu\n"
+    "- very_active: olahraga berat + kerja fisik"
 )
 
 
@@ -53,26 +53,26 @@ def owner_only(func):
 @owner_only
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Hello! I'm your personal bulking assistant bot 💪\n\n"
-        "Available commands:\n"
-        "/profile - fill/update body metrics & bulking target\n"
-        "/calories - view daily calorie & protein requirements\n"
-        "/suggest - high-protein meal suggestions (adjusted to today's remaining budget)\n\n"
-        "Daily logging (record manually from Huawei Health / your meals):\n"
-        "/weight <kg> - log today's body weight\n"
-        "/exercise <kcal> [note] - log calories burned from Huawei Health\n"
-        "/eat <kcal> [protein_g] - log calories (& protein) you have eaten\n"
-        "/eat <description> - or just describe your meal, AI will estimate it\n"
-        "or send a food photo - AI will estimate calories/protein from it\n"
-        "/remaining - check remaining calorie & protein budget for today\n"
-        "/week - weekly progress summary & adjustment suggestions\n\n"
-        "Or just chat freely about nutrition/bulking, and I'll answer using AI."
+        "Halo! Gua bot asisten bulking personal lu 💪\n\n"
+        "Command yang tersedia:\n"
+        "/profil - isi/update data badan & target bulking\n"
+        "/kalori - lihat kebutuhan kalori & protein harian\n"
+        "/saran - saran menu tinggi protein (sesuai sisa jatah kalori hari ini)\n\n"
+        "Pencatatan Harian:\n"
+        "/berat <kg> - catat berat badan hari ini\n"
+        "/olahraga <kkal> [catatan] - catat kalori terbakar dari aktivitas\n"
+        "/makan <kkal> [protein_g] - catat kalori & protein yang dimakan\n"
+        "/makan <deskripsi> - deskripsikan makanan, AI akan estimasi otomatis\n"
+        "atau kirim foto makanan - AI akan estimasi kalori dari foto\n"
+        "/sisa - cek sisa jatah kalori & protein hari ini\n"
+        "/minggu - ringkasan progres mingguan & saran penyesuaian\n\n"
+        "Atau chat bebas aja seputar nutrisi/bulking, gua bakal jawab pakai AI."
     )
 
 
 @owner_only
 async def profile_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("What is your current body weight in kg?")
+    await update.message.reply_text("Berapa berat badan kamu sekarang (kg)?")
     return WEIGHT
 
 
@@ -80,9 +80,9 @@ async def profile_weight(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         context.user_data["weight_kg"] = float(update.message.text.replace(",", "."))
     except ValueError:
-        await update.message.reply_text("Please enter a number, e.g.: 65")
+        await update.message.reply_text("Tolong masukkan angka, contoh: 65")
         return WEIGHT
-    await update.message.reply_text("What is your height in cm?")
+    await update.message.reply_text("Berapa tinggi badan kamu (cm)?")
     return HEIGHT
 
 
@@ -90,9 +90,9 @@ async def profile_height(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         context.user_data["height_cm"] = float(update.message.text.replace(",", "."))
     except ValueError:
-        await update.message.reply_text("Please enter a number, e.g.: 170")
+        await update.message.reply_text("Tolong masukkan angka, contoh: 170")
         return HEIGHT
-    await update.message.reply_text("What is your age in years?")
+    await update.message.reply_text("Berapa umur kamu?")
     return AGE
 
 
@@ -100,16 +100,16 @@ async def profile_age(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         context.user_data["age"] = int(update.message.text)
     except ValueError:
-        await update.message.reply_text("Please enter a number, e.g.: 25")
+        await update.message.reply_text("Tolong masukkan angka bulat, contoh: 25")
         return AGE
-    await update.message.reply_text("What is your gender? (male/female)")
+    await update.message.reply_text("Apa jenis kelamin kamu? (Ketik: male / female)")
     return GENDER
 
 
 async def profile_gender(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip().lower()
     if text not in ("male", "female"):
-        await update.message.reply_text("Please type 'male' or 'female'.")
+        await update.message.reply_text("Tolong ketik 'male' atau 'female'.")
         return GENDER
     context.user_data["gender"] = text
     await update.message.reply_text(ACTIVITY_HELP)
@@ -119,10 +119,10 @@ async def profile_gender(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def profile_activity(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip().lower()
     if text not in VALID_ACTIVITY_LEVELS:
-        await update.message.reply_text("Invalid choice. " + ACTIVITY_HELP)
+        await update.message.reply_text("Pilihan tidak valid. " + ACTIVITY_HELP)
         return ACTIVITY
     context.user_data["activity_level"] = text
-    await update.message.reply_text("What is your target weight gain in kg? (e.g.: 5)")
+    await update.message.reply_text("Berapa target kenaikan berat badan kamu (kg)? (contoh: 5)")
     return TARGET_GAIN
 
 
@@ -130,9 +130,9 @@ async def profile_target_gain(update: Update, context: ContextTypes.DEFAULT_TYPE
     try:
         context.user_data["target_gain_kg"] = float(update.message.text.replace(",", "."))
     except ValueError:
-        await update.message.reply_text("Please enter a number, e.g.: 5")
+        await update.message.reply_text("Tolong masukkan angka, contoh: 5")
         return TARGET_GAIN
-    await update.message.reply_text("In how many weeks do you want to achieve this target? (e.g.: 8 for 2 months)")
+    await update.message.reply_text("Dalam berapa minggu kamu ingin mencapai target ini? (contoh: 8)")
     return TARGET_WEEKS
 
 
@@ -140,7 +140,7 @@ async def profile_target_weeks(update: Update, context: ContextTypes.DEFAULT_TYP
     try:
         context.user_data["target_weeks"] = float(update.message.text.replace(",", "."))
     except ValueError:
-        await update.message.reply_text("Please enter a number, e.g.: 8")
+        await update.message.reply_text("Tolong masukkan angka, contoh: 8")
         return TARGET_WEEKS
 
     profile = Profile(
@@ -155,13 +155,13 @@ async def profile_target_weeks(update: Update, context: ContextTypes.DEFAULT_TYP
     save_profile(profile)
 
     plan = calculate_bulking_plan(profile)
-    await update.message.reply_text("Profile saved! Here is your calculated plan:")
+    await update.message.reply_text("Profil berhasil disimpan! Berikut rencana kalori harianmu:")
     await update.message.reply_text(format_plan_message(profile, plan), parse_mode="Markdown")
     return ConversationHandler.END
 
 
 async def profile_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Alright, cancelled.")
+    await update.message.reply_text("Proses pembuatan profil dibatalkan.")
     return ConversationHandler.END
 
 
@@ -169,7 +169,7 @@ async def profile_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def calories(update: Update, context: ContextTypes.DEFAULT_TYPE):
     profile = load_profile()
     if profile is None:
-        await update.message.reply_text("Your profile does not exist yet. Please fill it out using /profile.")
+        await update.message.reply_text("Profil lu belum ada. Tolong buat dulu pakai /profil.")
         return
     plan = calculate_bulking_plan(profile)
     await update.message.reply_text(format_plan_message(profile, plan), parse_mode="Markdown")
@@ -179,19 +179,19 @@ async def calories(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):
     profile = load_profile()
     if profile is None:
-        await update.message.reply_text("Your profile does not exist yet. Please fill it out using /profile.")
+        await update.message.reply_text("Profil lu belum ada. Tolong buat dulu pakai /profil.")
         return
 
     plan = calculate_bulking_plan(profile)
     today_log = get_log()
     remaining_kcal = max(plan.target_calories - today_log.food_kcal, 0)
     remaining_protein = max(plan.protein_g - today_log.food_protein_g, 0)
-    await update.message.reply_text("Hold on, compiling meal suggestions...")
+    await update.message.reply_text("Tunggu sebentar, sedang menyusun saran makanan...")
 
     system_prompt = (
         "You are a personal nutrition assistant for someone currently on a bulking program "
-        "(gaining muscle mass). Answer in casual but clear English, "
-        "use short bullet points, and focus on foods that are easily available."
+        "(gaining muscle mass). Answer in casual Indonesian (pakai lu/gua atau bahasa santai). "
+        "Use short bullet points, and focus on foods that are easily available in Indonesia."
     )
     if today_log.food_kcal > 0 and remaining_kcal <= 50:
         user_message = (
@@ -208,11 +208,11 @@ async def suggest(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"of {plan.target_calories} kcal / {plan.protein_g} g protein, having already eaten "
             f"{today_log.food_kcal:.0f} kcal / {today_log.food_protein_g:.0f} g protein). "
             f"Please give some examples of high-protein meals (suitable for the time of day) "
-            f"that are easily available, fit into the remaining calorie budget, along with "
+            f"that are easily available in Indonesia, fit into the remaining calorie budget, along with "
             f"estimated protein & calorie content for each meal."
         )
     answer, agent_used = await ask_agent(system_prompt, user_message)
-    await update.message.reply_text(f"{answer}\n\n_(answered by: {agent_used})_", parse_mode="Markdown")
+    await update.message.reply_text(f"{answer}\n\n_(dijawab oleh: {agent_used})_", parse_mode="Markdown")
 
 
 def _parse_float(text: str) -> float:
@@ -222,45 +222,45 @@ def _parse_float(text: str) -> float:
 @owner_only
 async def weight(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
-        await update.message.reply_text("Format: /weight <kg>, e.g.: /weight 65.5")
+        await update.message.reply_text("Format: /berat <kg>, contoh: /berat 65.5")
         return
     try:
         weight_val = _parse_float(context.args[0])
     except ValueError:
-        await update.message.reply_text("Please enter a number only, e.g.: /weight 65.5")
+        await update.message.reply_text("Tolong masukkan angka, contoh: /berat 65.5")
         return
     log_weight(weight_val)
-    await update.message.reply_text(f"Alright, today's body weight ({today_str()}) logged: {weight_val} kg.")
+    await update.message.reply_text(f"Mantap, berat badan hari ini ({today_str()}) dicatat: {weight_val} kg.")
 
 
 @owner_only
 async def exercise(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text(
-            "Format: /exercise <kcal_burned> [note], e.g.:\n"
-            "/exercise 350 5k run from Huawei Health"
+            "Format: /olahraga <kkal> [catatan], contoh:\n"
+            "/olahraga 350 lari 5km"
         )
         return
     try:
         kcal = _parse_float(context.args[0])
     except ValueError:
-        await update.message.reply_text("Kcal must be a number, e.g.: /exercise 350 5k run")
+        await update.message.reply_text("Kalori harus angka, contoh: /olahraga 350 lari")
         return
     note = " ".join(context.args[1:])
     entry = log_exercise(kcal, note)
     await update.message.reply_text(
-        f"Logged: +{kcal:.0f} kcal of exercise today (total: {entry.exercise_kcal:.0f} kcal).\n"
-        f"Note: This is just for reference/cross-checking, it is not added to your food budget, "
-        f"because your TDEE already assumes your activity level."
+        f"Dicatat: olahraga hari ini membakar +{kcal:.0f} kkal (total: {entry.exercise_kcal:.0f} kkal).\n"
+        f"Catatan: Ini cuma buat referensi dan nggak nambah jatah makan ya, karena TDEE kamu udah "
+        f"mencakup level aktivitas kamu."
     )
 
 
 def _format_food_logged(entry, kcal: float, protein: float, header: str) -> str:
     return (
         f"{header}\n"
-        f"Logged: +{kcal:.0f} kcal / +{protein:.0f} g protein.\n"
-        f"Total today: {entry.food_kcal:.0f} kcal, {entry.food_protein_g:.0f} g protein.\n"
-        f"Check your remaining budget for today using /remaining."
+        f"Dicatat: masuk +{kcal:.0f} kkal / +{protein:.0f} g protein.\n"
+        f"Total hari ini: {entry.food_kcal:.0f} kkal, {entry.food_protein_g:.0f} g protein.\n"
+        f"Cek sisa jatah kalori kamu hari ini pakai /sisa."
     )
 
 
@@ -269,42 +269,42 @@ async def eat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text(
             "Format:\n"
-            "/eat <kcal> [protein_g] - e.g.: /eat 450 35\n"
-            "/eat <food description> - e.g.: /eat 1 plate fried rice with chicken "
-            "(AI will estimate the kcal & protein for you)\n"
-            "Or just send a photo of your meal."
+            "/makan <kkal> [protein_g] - contoh: /makan 450 35\n"
+            "/makan <deskripsi> - contoh: /makan 1 porsi nasi goreng ayam "
+            "(AI otomatis estimasi kalori & protein)\n"
+            "Atau cukup kirim foto makanan aja."
         )
         return
 
-    # Coba format manual dulu: /eat <kcal> [protein_g]
+    # Coba format manual dulu
     try:
         kcal = _parse_float(context.args[0])
         protein = _parse_float(context.args[1]) if len(context.args) > 1 else 0.0
         entry = log_food(kcal, protein)
-        await update.message.reply_text(_format_food_logged(entry, kcal, protein, "Manually logged."))
+        await update.message.reply_text(_format_food_logged(entry, kcal, protein, "Input manual."))
         return
     except ValueError:
         pass
 
-    # Bukan angka -> anggap deskripsi makanan, minta Claude estimasi.
+    # Bukan angka -> deskripsi teks
     description = " ".join(context.args)
-    await update.message.reply_text("Hold on, estimating calories & protein...")
+    await update.message.reply_text("Tunggu sebentar, AI lagi ngitung estimasi kalori & protein...")
     estimate = await estimate_food_from_text(description)
     if estimate is None:
         await update.message.reply_text(
-            "Couldn't estimate that automatically (Gemini API might be down/misconfigured). "
-            "Please log manually instead, e.g.: /eat 450 35"
+            "Gagal melakukan estimasi (API Gemini mungkin error/belum disetup). "
+            "Tolong catat manual, contoh: /makan 450 35"
         )
         return
     kcal, protein = float(estimate["kcal"]), float(estimate["protein_g"])
     entry = log_food(kcal, protein)
-    header = f"🍽️ {estimate['food_name']} (estimated, confidence: {estimate['confidence']})"
+    header = f"🍽️ {estimate['food_name']} (estimasi, akurasi: {estimate['confidence']})"
     await update.message.reply_text(_format_food_logged(entry, kcal, protein, header))
 
 
 @owner_only
 async def food_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hold on, analyzing the photo...")
+    await update.message.reply_text("Tunggu sebentar, menganalisis foto makanan...")
     photo = update.message.photo[-1]
     tg_file = await context.bot.get_file(photo.file_id)
     image_bytes = bytes(await tg_file.download_as_bytearray())
@@ -313,13 +313,13 @@ async def food_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     estimate = await estimate_food_from_image(image_bytes, "image/jpeg", caption)
     if estimate is None:
         await update.message.reply_text(
-            "Couldn't analyze that photo (Gemini API might be down/misconfigured). "
-            "Please log manually instead, e.g.: /eat 450 35"
+            "Gagal menganalisis foto (API Gemini mungkin error/belum disetup). "
+            "Tolong catat manual, contoh: /makan 450 35"
         )
         return
     kcal, protein = float(estimate["kcal"]), float(estimate["protein_g"])
     entry = log_food(kcal, protein)
-    header = f"🍽️ {estimate['food_name']} (estimated from photo, confidence: {estimate['confidence']})"
+    header = f"🍽️ {estimate['food_name']} (dari foto, akurasi: {estimate['confidence']})"
     await update.message.reply_text(_format_food_logged(entry, kcal, protein, header))
 
 
@@ -327,7 +327,7 @@ async def food_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def remaining(update: Update, context: ContextTypes.DEFAULT_TYPE):
     profile = load_profile()
     if profile is None:
-        await update.message.reply_text("Your profile does not exist yet. Please fill it out using /profile.")
+        await update.message.reply_text("Profil lu belum ada. Tolong buat dulu pakai /profil.")
         return
     plan = calculate_bulking_plan(profile)
     today_log = get_log()
@@ -335,16 +335,16 @@ async def remaining(update: Update, context: ContextTypes.DEFAULT_TYPE):
     remaining_protein = plan.protein_g - today_log.food_protein_g
 
     lines = [
-        f"📆 *Today's Status ({today_str()})*",
-        f"Target: {plan.target_calories} kcal / {plan.protein_g} g protein",
-        f"Eaten: {today_log.food_kcal:.0f} kcal / {today_log.food_protein_g:.0f} g protein",
-        f"Remaining: {remaining_kcal:.0f} kcal / {remaining_protein:.0f} g protein",
+        f"📆 *Status Hari Ini ({today_str()})*",
+        f"Target: {plan.target_calories} kkal / {plan.protein_g} g protein",
+        f"Udah masuk: {today_log.food_kcal:.0f} kkal / {today_log.food_protein_g:.0f} g protein",
+        f"Sisa jatah: {remaining_kcal:.0f} kkal / {remaining_protein:.0f} g protein",
     ]
     if today_log.exercise_kcal > 0:
-        lines.append(f"Exercise today (Huawei Health): {today_log.exercise_kcal:.0f} kcal")
+        lines.append(f"Olahraga hari ini (Health App): {today_log.exercise_kcal:.0f} kkal")
     if remaining_kcal < 0:
         lines.append("")
-        lines.append("⚠️ You have exceeded today's calorie target.")
+        lines.append("⚠️ Awas, asupan kalori kamu hari ini udah melebihi target surplus.")
     await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
 
 
@@ -352,7 +352,7 @@ async def remaining(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def week(update: Update, context: ContextTypes.DEFAULT_TYPE):
     profile = load_profile()
     if profile is None:
-        await update.message.reply_text("Your profile does not exist yet. Please fill it out using /profile.")
+        await update.message.reply_text("Profil lu belum ada. Tolong buat dulu pakai /profil.")
         return
     review = build_weekly_review(profile)
     await update.message.reply_text(format_weekly_message(review), parse_mode="Markdown")
@@ -370,13 +370,13 @@ async def free_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"protein {plan.protein_g} g/day."
         )
     else:
-        context_str = "User has not filled out their profile yet, suggest they use /profile if relevant."
+        context_str = "User has not filled out their profile yet, suggest they use /profil if relevant."
 
     system_prompt = (
-        "You are a personal bulking/nutrition assistant. Be casual and supportive. " + context_str
+        "You are a personal bulking/nutrition assistant. Be casual and supportive. Answer in casual Indonesian language (use lu/gua or santai). " + context_str
     )
     answer, agent_used = await ask_agent(system_prompt, update.message.text)
-    await update.message.reply_text(f"{answer}\n\n_(answered by: {agent_used})_", parse_mode="Markdown")
+    await update.message.reply_text(f"{answer}\n\n_(dijawab oleh: {agent_used})_", parse_mode="Markdown")
 
 
 def main():
@@ -388,7 +388,7 @@ def main():
     app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
     profile_conv = ConversationHandler(
-        entry_points=[CommandHandler("profile", profile_start)],
+        entry_points=[CommandHandler("profil", profile_start)],
         states={
             WEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, profile_weight)],
             HEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, profile_height)],
@@ -398,18 +398,18 @@ def main():
             TARGET_GAIN: [MessageHandler(filters.TEXT & ~filters.COMMAND, profile_target_gain)],
             TARGET_WEEKS: [MessageHandler(filters.TEXT & ~filters.COMMAND, profile_target_weeks)],
         },
-        fallbacks=[CommandHandler("cancel", profile_cancel)],
+        fallbacks=[CommandHandler("batal", profile_cancel)],
     )
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(profile_conv)
-    app.add_handler(CommandHandler("calories", calories))
-    app.add_handler(CommandHandler("suggest", suggest))
-    app.add_handler(CommandHandler("weight", weight))
-    app.add_handler(CommandHandler("exercise", exercise))
-    app.add_handler(CommandHandler("eat", eat))
-    app.add_handler(CommandHandler("remaining", remaining))
-    app.add_handler(CommandHandler("week", week))
+    app.add_handler(CommandHandler("kalori", calories))
+    app.add_handler(CommandHandler("saran", suggest))
+    app.add_handler(CommandHandler("berat", weight))
+    app.add_handler(CommandHandler("olahraga", exercise))
+    app.add_handler(CommandHandler("makan", eat))
+    app.add_handler(CommandHandler("sisa", remaining))
+    app.add_handler(CommandHandler("minggu", week))
     app.add_handler(MessageHandler(filters.PHOTO, food_photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, free_chat))
 

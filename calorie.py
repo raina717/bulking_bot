@@ -41,15 +41,16 @@ def calculate_bulking_plan(profile: Profile) -> BulkingPlan:
     warning = ""
     if daily_surplus > SAFE_MAX_DAILY_SURPLUS:
         warning = (
-            f"Your target requires a surplus of ~{daily_surplus:.0f} kcal/day, which is quite "
-            f"aggressive (usually above {SAFE_MAX_DAILY_SURPLUS} kcal/day leads to more fat gain "
-            f"than muscle). Consider a longer time frame for leaner gains."
+            f"Target kamu butuh surplus ~{daily_surplus:.0f} kkal/hari, itu cukup "
+            f"agresif (biasanya di atas {SAFE_MAX_DAILY_SURPLUS} kkal/hari bikin gain "
+            f"lebih banyak ke lemak daripada otot). Pertimbangkan target waktu lebih panjang "
+            f"biar gain-nya lebih lean."
         )
     elif daily_surplus < SAFE_MIN_DAILY_SURPLUS:
         warning = (
-            f"Your surplus is only ~{daily_surplus:.0f} kcal/day, so progress will be slow. "
-            f"This is fine if lean bulking is your priority, but you may want to increase it "
-            f"slightly to reach your time target."
+            f"Surplus kamu cuma ~{daily_surplus:.0f} kkal/hari, progresnya bakal pelan. "
+            f"Gapapa kalau memang prioritas lean bulk, tapi kalau mau ngejar target waktu, "
+            f"boleh dinaikin dikit."
         )
 
     target_calories = tdee + daily_surplus
@@ -74,17 +75,17 @@ def calculate_bulking_plan(profile: Profile) -> BulkingPlan:
 
 def format_plan_message(profile: Profile, plan: BulkingPlan) -> str:
     lines = [
-        f"📊 *Your Daily Requirements Summary*",
-        f"BMR: {plan.bmr} kcal",
-        f"TDEE (maintenance): {plan.tdee} kcal",
-        f"Target surplus: +{plan.daily_surplus} kcal/day",
-        f"🎯 *Daily Calorie Target: {plan.target_calories} kcal*",
+        f"📊 *Ringkasan Kebutuhan Harian Kamu*",
+        f"BMR: {plan.bmr} kkal",
+        f"TDEE (maintenance): {plan.tdee} kkal",
+        f"Target surplus: +{plan.daily_surplus} kkal/hari",
+        f"🎯 *Target Kalori Harian: {plan.target_calories} kkal*",
         "",
-        f"🥩 Protein: {plan.protein_g} g/day",
-        f"🥑 Fat: {plan.fat_g} g/day",
-        f"🍚 Carbs: {plan.carbs_g} g/day",
+        f"🥩 Protein: {plan.protein_g} g/hari",
+        f"🥑 Fat: {plan.fat_g} g/hari",
+        f"🍚 Carbs: {plan.carbs_g} g/hari",
         "",
-        f"(Target: gain {profile.target_gain_kg} kg in {profile.target_weeks:.0f} weeks)",
+        f"(Target: naik {profile.target_gain_kg} kg dalam {profile.target_weeks:.0f} minggu)",
     ]
     if plan.warning:
         lines.append("")

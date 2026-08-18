@@ -34,25 +34,25 @@ def _build_suggestion(
 ) -> str:
     if days_logged < 4:
         return (
-            "Insufficient data this week (ideally, weigh yourself and log meals daily "
-            "using /weight and /eat). Keep logging for more accurate recommendations."
+            "Data minggu ini kurang (idealnya timbang badan dan catat makan tiap hari "
+            "pakai /weight dan /eat). Terus catat ya biar sarannya lebih akurat."
         )
     if actual_rate is None:
-        return "Cannot compare to last week yet (requires at least 2 weeks of weight data)."
+        return "Belum bisa bandingin sama minggu lalu (butuh data berat badan minimal 2 minggu)."
 
     if actual_rate < target_rate * 0.5:
         return (
-            f"Weight gain this week (~{actual_rate:+.2f} kg) is below the target "
-            f"(~{target_rate:.2f} kg/week). If this happens for 2-3 consecutive weeks, "
-            f"increase your intake by ~100-150 kcal/day."
+            f"Kenaikan berat minggu ini (~{actual_rate:+.2f} kg) di bawah target "
+            f"(~{target_rate:.2f} kg/minggu). Kalau ini terjadi 2-3 minggu berturut-turut, "
+            f"coba tambahin makan sekitar ~100-150 kkal/hari."
         )
     if actual_rate > target_rate * 1.5:
         return (
-            f"Weight gain this week (~{actual_rate:+.2f} kg) is faster than the target "
-            f"(~{target_rate:.2f} kg/week) — this gain might be mostly fat. "
-            f"Consider reducing your intake by ~100-150 kcal/day."
+            f"Kenaikan berat minggu ini (~{actual_rate:+.2f} kg) lebih cepat dari target "
+            f"(~{target_rate:.2f} kg/minggu) — awas gain-nya banyakan lemak. "
+            f"Coba kurangi asupan sekitar ~100-150 kkal/hari."
         )
-    return f"Your weight progress this week (~{actual_rate:+.2f} kg) is right on target. Keep it up."
+    return f"Progres berat kamu minggu ini (~{actual_rate:+.2f} kg) udah pas banget sama target. Lanjutkan!"
 
 
 def build_weekly_review(profile: Profile) -> WeeklyReview:
@@ -88,24 +88,24 @@ def build_weekly_review(profile: Profile) -> WeeklyReview:
 
 
 def format_weekly_message(review: WeeklyReview) -> str:
-    lines = ["📅 *Weekly Progress Summary*", f"Days logged: {review.days_logged}/7"]
+    lines = ["📅 *Ringkasan Progres Mingguan*", f"Hari tercatat: {review.days_logged}/7"]
     if review.avg_weight_this_week is not None:
-        lines.append(f"Average weight this week: {review.avg_weight_this_week:.1f} kg")
+        lines.append(f"Rata-rata berat minggu ini: {review.avg_weight_this_week:.1f} kg")
     if review.avg_weight_prev_week is not None:
-        lines.append(f"Average weight last week: {review.avg_weight_prev_week:.1f} kg")
+        lines.append(f"Rata-rata berat minggu lalu: {review.avg_weight_prev_week:.1f} kg")
     if review.actual_weekly_rate_kg is not None:
         lines.append(
-            f"Change: {review.actual_weekly_rate_kg:+.2f} kg "
-            f"(target: {review.target_weekly_rate_kg:+.2f} kg/week)"
+            f"Perubahan: {review.actual_weekly_rate_kg:+.2f} kg "
+            f"(target: {review.target_weekly_rate_kg:+.2f} kg/minggu)"
         )
     if review.avg_food_kcal is not None:
-        lines.append(f"Average intake: {review.avg_food_kcal:.0f} kcal/day (TDEE: {review.tdee:.0f} kcal)")
+        lines.append(f"Rata-rata asupan: {review.avg_food_kcal:.0f} kkal/hari (TDEE: {review.tdee:.0f} kkal)")
     if review.avg_food_protein_g is not None:
-        lines.append(f"Average protein: {review.avg_food_protein_g:.0f} g/day")
+        lines.append(f"Rata-rata protein: {review.avg_food_protein_g:.0f} g/hari")
     if review.avg_exercise_kcal is not None:
         lines.append(
-            f"Average exercise calories (Huawei Health): {review.avg_exercise_kcal:.0f} kcal/day "
-            f"(reference only, already assumed in TDEE)"
+            f"Rata-rata olahraga (Health App): {review.avg_exercise_kcal:.0f} kkal/hari "
+            f"(cuma referensi, udah terhitung di TDEE)"
         )
     lines.append("")
     lines.append(f"💡 {review.suggestion}")
