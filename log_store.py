@@ -1,8 +1,3 @@
-"""
-Penyimpanan log harian (berat badan, kalori exercise dari Huawei Health,
-kalori & protein makanan) buat kontrol progress bulking mingguan.
-File JSON simpel, karena cuma 1 user.
-"""
 import json
 import os
 from dataclasses import dataclass, asdict
@@ -16,7 +11,7 @@ TIMEZONE = os.getenv("TIMEZONE", "Asia/Jakarta")
 
 @dataclass
 class DailyLog:
-    date: str  # YYYY-MM-DD
+    date: str
     weight_kg: Optional[float] = None
     exercise_kcal: float = 0.0
     exercise_note: str = ""
@@ -80,7 +75,6 @@ def log_food(kcal: float, protein_g: float = 0.0, d: Optional[str] = None) -> Da
 
 
 def get_range(days: int, end_date: Optional[str] = None) -> list[DailyLog]:
-    """Ambil log `days` hari terakhir sampai `end_date` (default hari ini), urut lama->baru."""
     end = date_cls.fromisoformat(end_date) if end_date else date_cls.fromisoformat(today_str())
     logs = _load_all()
     return [

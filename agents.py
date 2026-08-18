@@ -1,13 +1,3 @@
-"""
-Router 2 agent: Claude (utama) dan Hermes (fallback, self-hosted via Ollama).
-
-Alur:
-1. Coba jawab pakai Claude dulu (akurasi lebih bisa diandalkan buat kalkulasi
-   & saran nutrisi).
-2. Kalau Claude gagal (API error, timeout, rate limit, atau ANTHROPIC_API_KEY
-   belum diisi), otomatis fallback ke Hermes yang jalan lokal di VPS lewat
-   Ollama, biar bot tetap bisa jawab.
-"""
 import os
 import logging
 import httpx
@@ -26,7 +16,7 @@ _claude_client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY) if ANTHROPIC_API_KEY 
 
 async def _ask_claude(system_prompt: str, user_message: str) -> str:
     if _claude_client is None:
-        raise RuntimeError("ANTHROPIC_API_KEY belum diisi")
+        raise RuntimeError("ANTHROPIC_API_KEY is not set")
     resp = await _claude_client.messages.create(
         model=CLAUDE_MODEL,
         max_tokens=1024,
@@ -54,25 +44,21 @@ async def _ask_hermes(system_prompt: str, user_message: str) -> str:
 
 
 async def ask_agent(system_prompt: str, user_message: str) -> tuple[str, str]:
-    """
-    Return (jawaban, nama_agent_yang_jawab).
-    Coba Claude dulu, fallback ke Hermes kalau gagal.
-    """
     try:
         answer = await _ask_claude(system_prompt, user_message)
         return answer, "claude"
     except (APIError, APIConnectionError, APITimeoutError, RateLimitError, RuntimeError) as e:
-        logger.warning("Claude gagal (%s), fallback ke Hermes...", e)
+        logger.warning("Claude failed (%s), falling back to Hermes...", e)
     except Exception as e:
-        logger.warning("Claude error tak terduga (%s), fallback ke Hermes...", e)
+        logger.warning("Unexpected Claude error (%s), falling back to Hermes...", e)
 
     try:
         answer = await _ask_hermes(system_prompt, user_message)
         return answer, "hermes"
     except Exception as e:
-        logger.error("Hermes juga gagal: %s", e)
+        logger.error("Hermes also failed: %s", e)
         return (
-            "Waduh, dua-duanya (Claude & Hermes) lagi gak bisa dihubungi. "
-            "Cek koneksi API key / Ollama service di VPS ya.",
+            "Both Claude and Hermes are unreachable. "
+            "Please check your API key or Ollama service connection.",
             "none",
         )

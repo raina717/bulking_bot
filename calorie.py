@@ -1,24 +1,9 @@
-"""
-Kalkulasi kebutuhan kalori & protein harian buat bulking.
-
-Rumus:
-- BMR: Mifflin-St Jeor (paling akurat & paling umum dipakai sekarang)
-- TDEE: BMR x activity multiplier
-- Surplus kalori: dihitung dari target kenaikan berat badan dibagi
-  jumlah hari, pakai estimasi ~7700 kkal per 1 kg kenaikan berat
-  (ini estimasi kasar campuran otot+lemak, prakteknya bisa beda-beda
-  tergantung training & genetik).
-- Protein: 2 g per kg berat badan (di rentang aman/optimal buat bulking,
-  yaitu 1.6-2.2 g/kg menurut riset ISSN).
-- Fat: ~25% dari total kalori.
-- Carbs: sisanya.
-"""
 from dataclasses import dataclass
 from profile_store import Profile, VALID_ACTIVITY_LEVELS
 
-KCAL_PER_KG_GAIN = 7700  # estimasi energi buat naik 1 kg berat badan
-SAFE_MAX_DAILY_SURPLUS = 700  # di atas ini, gain kemungkinan besar didominasi lemak
-SAFE_MIN_DAILY_SURPLUS = 200  # di bawah ini, progres bulking bakal kerasa lambat
+KCAL_PER_KG_GAIN = 7700
+SAFE_MAX_DAILY_SURPLUS = 700
+SAFE_MIN_DAILY_SURPLUS = 200
 
 
 @dataclass
@@ -56,16 +41,15 @@ def calculate_bulking_plan(profile: Profile) -> BulkingPlan:
     warning = ""
     if daily_surplus > SAFE_MAX_DAILY_SURPLUS:
         warning = (
-            f"Target kamu butuh surplus ~{daily_surplus:.0f} kkal/hari, itu cukup "
-            f"agresif (biasanya di atas {SAFE_MAX_DAILY_SURPLUS} kkal/hari bikin gain "
-            f"lebih banyak ke lemak daripada otot). Pertimbangkan target waktu lebih "
-            f"panjang biar gain-nya lebih lean."
+            f"Your target requires a surplus of ~{daily_surplus:.0f} kcal/day, which is quite "
+            f"aggressive (usually above {SAFE_MAX_DAILY_SURPLUS} kcal/day leads to more fat gain "
+            f"than muscle). Consider a longer time frame for leaner gains."
         )
     elif daily_surplus < SAFE_MIN_DAILY_SURPLUS:
         warning = (
-            f"Surplus kamu cuma ~{daily_surplus:.0f} kkal/hari, progresnya bakal pelan. "
-            f"Gapapa kalau memang prioritas lean bulk, tapi kalau mau ngejar target "
-            f"waktu, boleh dinaikin dikit."
+            f"Your surplus is only ~{daily_surplus:.0f} kcal/day, so progress will be slow. "
+            f"This is fine if lean bulking is your priority, but you may want to increase it "
+            f"slightly to reach your time target."
         )
 
     target_calories = tdee + daily_surplus
@@ -90,17 +74,17 @@ def calculate_bulking_plan(profile: Profile) -> BulkingPlan:
 
 def format_plan_message(profile: Profile, plan: BulkingPlan) -> str:
     lines = [
-        f"📊 *Ringkasan kebutuhan harian kamu*",
-        f"BMR: {plan.bmr} kkal",
-        f"TDEE (maintenance): {plan.tdee} kkal",
-        f"Target surplus: +{plan.daily_surplus} kkal/hari",
-        f"🎯 *Target kalori harian: {plan.target_calories} kkal*",
+        f"📊 *Your Daily Requirements Summary*",
+        f"BMR: {plan.bmr} kcal",
+        f"TDEE (maintenance): {plan.tdee} kcal",
+        f"Target surplus: +{plan.daily_surplus} kcal/day",
+        f"🎯 *Daily Calorie Target: {plan.target_calories} kcal*",
         "",
-        f"🥩 Protein: {plan.protein_g} g/hari",
-        f"🥑 Fat: {plan.fat_g} g/hari",
-        f"🍚 Carbs: {plan.carbs_g} g/hari",
+        f"🥩 Protein: {plan.protein_g} g/day",
+        f"🥑 Fat: {plan.fat_g} g/day",
+        f"🍚 Carbs: {plan.carbs_g} g/day",
         "",
-        f"(Target: naik {profile.target_gain_kg} kg dalam {profile.target_weeks:.0f} minggu)",
+        f"(Target: gain {profile.target_gain_kg} kg in {profile.target_weeks:.0f} weeks)",
     ]
     if plan.warning:
         lines.append("")

@@ -1,17 +1,3 @@
-"""
-Analisis progress mingguan: bandingin rata-rata berat badan & asupan aktual
-vs target dari profile, kasih saran adjust surplus kalau perlu.
-
-Prinsip (sesuai riset umum soal bulking): pakai rata-rata mingguan buat
-banding berat badan, bukan angka harian, karena fluktuasi harian sering
-cuma air/glycogen bukan gain otot/lemak beneran.
-
-Catatan: kalori exercise (dari Huawei Health) TIDAK ditambahin balik ke
-budget makan harian, karena TDEE di calorie.py sudah mengasumsikan level
-aktivitas (activity_level) yang mencakup olahraga rutin. Data exercise di
-sini cuma buat referensi/cross-check, biar activity_level di profil tetap
-representatif sama aktivitas asli.
-"""
 from dataclasses import dataclass
 from datetime import date as date_cls, timedelta
 from statistics import mean
@@ -48,25 +34,25 @@ def _build_suggestion(
 ) -> str:
     if days_logged < 4:
         return (
-            "Data minggu ini masih kurang (idealnya timbang & catat makan tiap hari "
-            "pakai /weight dan /eat). Lanjutin logging-nya biar rekomendasi ini akurat."
+            "Insufficient data this week (ideally, weigh yourself and log meals daily "
+            "using /weight and /eat). Keep logging for more accurate recommendations."
         )
     if actual_rate is None:
-        return "Belum bisa dibandingin ke minggu lalu (butuh data berat badan minimal 2 minggu)."
+        return "Cannot compare to last week yet (requires at least 2 weeks of weight data)."
 
     if actual_rate < target_rate * 0.5:
         return (
-            f"Kenaikan BB minggu ini (~{actual_rate:+.2f} kg) di bawah target "
-            f"(~{target_rate:.2f} kg/minggu). Kalau ini kejadian 2-3 minggu berturut-turut, "
-            f"tambah asupan ~100-150 kkal/hari."
+            f"Weight gain this week (~{actual_rate:+.2f} kg) is below the target "
+            f"(~{target_rate:.2f} kg/week). If this happens for 2-3 consecutive weeks, "
+            f"increase your intake by ~100-150 kcal/day."
         )
     if actual_rate > target_rate * 1.5:
         return (
-            f"Kenaikan BB minggu ini (~{actual_rate:+.2f} kg) lebih cepat dari target "
-            f"(~{target_rate:.2f} kg/minggu) — kemungkinan gain-nya lebih banyak ke lemak. "
-            f"Pertimbangkan kurangin asupan ~100-150 kkal/hari."
+            f"Weight gain this week (~{actual_rate:+.2f} kg) is faster than the target "
+            f"(~{target_rate:.2f} kg/week) — this gain might be mostly fat. "
+            f"Consider reducing your intake by ~100-150 kcal/day."
         )
-    return f"Progres BB minggu ini (~{actual_rate:+.2f} kg) udah sesuai target. Pertahanin polanya."
+    return f"Your weight progress this week (~{actual_rate:+.2f} kg) is right on target. Keep it up."
 
 
 def build_weekly_review(profile: Profile) -> WeeklyReview:
@@ -102,24 +88,24 @@ def build_weekly_review(profile: Profile) -> WeeklyReview:
 
 
 def format_weekly_message(review: WeeklyReview) -> str:
-    lines = ["📅 *Ringkasan progress minggu ini*", f"Hari ke-log: {review.days_logged}/7"]
+    lines = ["📅 *Weekly Progress Summary*", f"Days logged: {review.days_logged}/7"]
     if review.avg_weight_this_week is not None:
-        lines.append(f"Rata-rata BB minggu ini: {review.avg_weight_this_week:.1f} kg")
+        lines.append(f"Average weight this week: {review.avg_weight_this_week:.1f} kg")
     if review.avg_weight_prev_week is not None:
-        lines.append(f"Rata-rata BB minggu lalu: {review.avg_weight_prev_week:.1f} kg")
+        lines.append(f"Average weight last week: {review.avg_weight_prev_week:.1f} kg")
     if review.actual_weekly_rate_kg is not None:
         lines.append(
-            f"Perubahan: {review.actual_weekly_rate_kg:+.2f} kg "
-            f"(target: {review.target_weekly_rate_kg:+.2f} kg/minggu)"
+            f"Change: {review.actual_weekly_rate_kg:+.2f} kg "
+            f"(target: {review.target_weekly_rate_kg:+.2f} kg/week)"
         )
     if review.avg_food_kcal is not None:
-        lines.append(f"Rata-rata asupan: {review.avg_food_kcal:.0f} kkal/hari (TDEE: {review.tdee:.0f} kkal)")
+        lines.append(f"Average intake: {review.avg_food_kcal:.0f} kcal/day (TDEE: {review.tdee:.0f} kcal)")
     if review.avg_food_protein_g is not None:
-        lines.append(f"Rata-rata protein: {review.avg_food_protein_g:.0f} g/hari")
+        lines.append(f"Average protein: {review.avg_food_protein_g:.0f} g/day")
     if review.avg_exercise_kcal is not None:
         lines.append(
-            f"Rata-rata kalori olahraga (Huawei Health): {review.avg_exercise_kcal:.0f} kkal/hari "
-            f"(referensi, sudah termasuk asumsi di TDEE)"
+            f"Average exercise calories (Huawei Health): {review.avg_exercise_kcal:.0f} kcal/day "
+            f"(reference only, already assumed in TDEE)"
         )
     lines.append("")
     lines.append(f"💡 {review.suggestion}")
