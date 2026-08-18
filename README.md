@@ -32,7 +32,7 @@ The easiest and recommended way to deploy the bot is using **Docker Compose**.
    cp .env.example .env
    nano .env
    ```
-   Fill in your `TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`, `ANTHROPIC_API_KEY`, and `GEMINI_API_KEY`.
+   Fill in your `TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`, `GROQ_API_KEY`, and `GEMINI_API_KEY`.
 4. **Start the bot:**
    ```bash
    docker compose up -d
@@ -61,5 +61,6 @@ The easiest and recommended way to deploy the bot is using **Docker Compose**.
 ## Troubleshooting
 
 - **Bot is unresponsive:** Ensure `TELEGRAM_OWNER_ID` in your `.env` file matches your actual Telegram User ID perfectly.
-- **Bot responds with "Both Claude and Hermes are unreachable":** Your `ANTHROPIC_API_KEY` is likely invalid or out of credits. Check your Claude API dashboard.
+- **Bot responds with "API Groq sedang bermasalah...":** Your `GROQ_API_KEY` is likely invalid or missing. Check your Groq Console.
+- **Bot responds with "Gagal melakukan estimasi..." on images:** Your `GEMINI_API_KEY` is invalid or missing. Check Google AI Studio.
 - **View Errors:** Run `docker compose logs -f` to see what is causing the issue.
