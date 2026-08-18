@@ -5,11 +5,11 @@ A personalized Telegram bot designed to assist you during your bulking journey.
 ## Features
 
 - `/profile` — Set or update your weight, height, age, gender, activity level, weight gain target, and duration.
-- `/kalori` — View your BMR, TDEE, daily calorie target, and macronutrient breakdown (protein, fat, carbs).
-- `/saran` — Request high-protein meal suggestions that automatically fit into your remaining daily calorie budget.
-- `/berat`, `/olahraga`, `/makan` — Manually log your daily progress (body weight, calories burned from Huawei Health or other fitness trackers, and calories/protein consumed).
-- `/sisa` — Check your remaining calorie and protein budget for the day.
-- `/minggu` — Get a weekly progress summary (average weight and intake vs target) along with suggestions to adjust your caloric surplus.
+- `/calories` — View your BMR, TDEE, daily calorie target, and macronutrient breakdown (protein, fat, carbs).
+- `/suggest` — Request high-protein meal suggestions that automatically fit into your remaining daily calorie budget.
+- `/weight`, `/exercise`, `/eat` — Manually log your daily progress (body weight, calories burned from Huawei Health or other fitness trackers, and calories/protein consumed).
+- `/remaining` — Check your remaining calorie and protein budget for the day.
+- `/week` — Get a weekly progress summary (average weight and intake vs target) along with suggestions to adjust your caloric surplus.
 - **Free Chat** — Ask any nutrition or bulking-related questions, and the bot will answer using your profile's context.
 
 ## Daily Logging & Progress Tracking
@@ -17,16 +17,16 @@ A personalized Telegram bot designed to assist you during your bulking journey.
 Currently, this bot **does not automatically connect** to the Huawei Health API (as Huawei does not provide an easily accessible personal API without an official app review). Instead, use manual logging. Open your fitness tracker app, check your burned calories and steps, and log them into the bot:
 
 ```text
-/berat 65.5
-/olahraga 350 5k run
-/makan 450 35        (Calories and protein from a single meal, can be called multiple times a day)
-/sisa                (Check remaining calorie/protein budget for today)
-/minggu              (Check weekly progress and surplus adjustment advice)
+/weight 65.5
+/exercise 350 5k run
+/eat 450 35          (Calories and protein from a single meal, can be called multiple times a day)
+/remaining           (Check remaining calorie/protein budget for today)
+/week                (Check weekly progress and surplus adjustment advice)
 ```
 
-> **Note:** Calories burned from exercises are **not** added back to your daily food budget. The calorie target from `/kalori` is calculated based on a TDEE that already accounts for your `activity_level` (which should include your workout routine). Exercise data is logged purely for reference and cross-checking, not to be "eaten back".
+> **Note:** Calories burned from exercises are **not** added back to your daily food budget. The calorie target from `/calories` is calculated based on a TDEE that already accounts for your `activity_level` (which should include your workout routine). Exercise data is logged purely for reference and cross-checking, not to be "eaten back".
 
-The `/minggu` command compares your average body weight this week vs last week against your target (`target_gain_kg` / `target_weeks` from your profile). It will suggest increasing or decreasing your surplus by ~100-150 kcal/day if your progress is consistently too slow or too fast for 2-3 consecutive weeks.
+The `/week` command compares your average body weight this week vs last week against your target (`target_gain_kg` / `target_weeks` from your profile). It will suggest increasing or decreasing your surplus by ~100-150 kcal/day if your progress is consistently too slow or too fast for 2-3 consecutive weeks.
 
 ## Agent Architecture
 
@@ -117,11 +117,11 @@ journalctl -u telegram-bulking-bot -f
 
 1. `/start` — View the main menu.
 2. `/profile` — Fill in your body metrics and target (e.g., gain 5 kg in 8 weeks).
-3. `/kalori` — View your daily calorie and protein targets.
-4. **Daily:** Open your fitness tracker and log `/berat`, `/olahraga`, and `/makan` after every meal.
-5. `/sisa` — Check your remaining calorie/protein budget for the day.
-6. `/saran` — Ask for high-protein meal recommendations that fit your remaining budget.
-7. `/minggu` — At the end of the week, check your progress and see if surplus adjustments are needed.
+3. `/calories` — View your daily calorie and protein targets.
+4. **Daily:** Open your fitness tracker and log `/weight`, `/exercise`, and `/eat` after every meal.
+5. `/remaining` — Check your remaining calorie/protein budget for the day.
+6. `/suggest` — Ask for high-protein meal recommendations that fit your remaining budget.
+7. `/week` — At the end of the week, check your progress and see if surplus adjustments are needed.
 8. **Chat anytime:** Ask any nutrition-related questions, and the bot will answer contextually based on your profile.
 
 ## Note on Calculation Accuracy
