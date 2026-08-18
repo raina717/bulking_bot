@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: bulking-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    # Uncomment the below extra_hosts if you are running a local Ollama instance
+    # on the host machine and you need the bot to connect to it.
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"

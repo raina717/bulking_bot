@@ -44,7 +44,34 @@ The bot is strictly locked to 1 user (you) via `TELEGRAM_OWNER_ID`, making it sa
 1. Chat with `@BotFather` on Telegram → Send `/newbot` → Follow the instructions to get your **Bot Token**.
 2. Chat with `@userinfobot` to get your own Telegram **User ID**.
 
-### 2. VPS Setup (e.g., Ubuntu/Debian)
+### 2. VPS Setup
+
+You can run the bot either using **Docker (Recommended)** or directly on the host using Python and systemd.
+
+#### Option A: Docker (Recommended)
+
+1. **Install Docker & Docker Compose** on your VPS.
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/raina717/bulking_bot.git
+   cd bulking_bot
+   ```
+3. Configure your environment variables:
+   ```bash
+   cp .env.example .env
+   nano .env
+   ```
+   Fill in `TELEGRAM_BOT_TOKEN`, `TELEGRAM_OWNER_ID`, `ANTHROPIC_API_KEY`, etc.
+4. Start the bot:
+   ```bash
+   docker compose up -d
+   ```
+5. To view logs:
+   ```bash
+   docker compose logs -f
+   ```
+
+#### Option B: Manual Setup (Python & systemd)
 
 Assuming you have SSH access to your VPS:
 
@@ -112,6 +139,7 @@ To view real-time logs:
 ```bash
 journalctl -u telegram-bulking-bot -f
 ```
+*(If you used Docker, view logs using `docker compose logs -f` instead.)*
 
 ## How to Use
 
